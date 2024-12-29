@@ -7,7 +7,6 @@ import * as path from 'path';
 import mammoth from 'mammoth';
 import puppeteer from 'puppeteer';
 
-
 export async function POST(request: NextRequest) {
     try {
         const data = await request.json();
@@ -15,7 +14,6 @@ export async function POST(request: NextRequest) {
 
         console.log('Received data:', data);
 
-       
         const templatePath = path.join(process.cwd(), 'public', 'word', 'Lulab_invioce.docx');
         if (!fs.existsSync(templatePath)) {
             return NextResponse.json({ error: 'Template file not found' }, { status: 404 });
@@ -24,7 +22,6 @@ export async function POST(request: NextRequest) {
         const template = fs.readFileSync(templatePath);
         const zip = new PizZip(template);
         const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
-
 
         try {
             doc.render(data);
@@ -38,7 +35,6 @@ export async function POST(request: NextRequest) {
             mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         });
 
-
         if (format === 'word') {
             return new NextResponse(wordContent, {
                 headers: {
@@ -48,11 +44,12 @@ export async function POST(request: NextRequest) {
             });
         }
 
+        // Use '/tmp' directory for temporary file storage in Vercel
+        const tempDir = '/tmp'; // Update to /tmp
+        // Vercel already has this directory, so no need to check for existence
         // Ensure temp directory exists
-        const tempDir = path.join(process.cwd(), 'temp');
         if (!fs.existsSync(tempDir)) {
-
-            fs.mkdirSync(tempDir, { recursive: true }); // Ensure directory exists
+            fs.mkdirSync(tempDir, { recursive: true });
         }
 
         // Save generated DOCX to a temporary file
@@ -89,7 +86,6 @@ export async function POST(request: NextRequest) {
                 'Content-Disposition': 'attachment; filename="Generated_Document.pdf"',
             },
         });
-
 
     } catch (error) {
         console.error("General error:", error);
